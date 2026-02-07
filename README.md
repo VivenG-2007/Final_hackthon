@@ -46,47 +46,18 @@
   </div>
 </div>
 
-<div style="padding: 2.5rem; border-radius: 2rem; background: #111827; color: white;">
-  <h2 style="color: #60A5FA; margin-top: 0; text-align: center; margin-bottom: 2rem;">🔄 Application Workflow</h2>
-  
-  <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 600px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 1rem; background: rgba(255,255,255,0.05); border-left: 4px solid #F59E0B;">
-      <div style="font-size: 1.5rem; font-weight: 800; color: #F59E0B;">01</div>
-      <div><b>Authentication:</b> Secure Login/Reset via Clerk Provider</div>
-    </div>
-    
-    <div style="text-align: center; color: rgba(255,255,255,0.2);">↓</div>
+## 🔄 Application Workflow
 
-    <div style="display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 1rem; background: rgba(255,255,255,0.05); border-left: 4px solid #EF4444;">
-      <div style="font-size: 1.5rem; font-weight: 800; color: #EF4444;">02</div>
-      <div><b>Dashboard:</b> View active stats, profile score, and job match alerts</div>
-    </div>
+| Step | Milestone | Description |
+| :--- | :--- | :--- |
+| **01** | **Authentication** | Secure Login/Reset via Clerk Provider |
+| **02** | **Dashboard** | View active stats, profile score, and job match alerts |
+| **03** | **Analysis** | Upload resume for deep AI scoring & keyword gap analysis |
+| **04** | **Practice** | Engage with AI Mock Interviewer or technical skill quizzes |
+| **05** | **GPS Roadmap** | Generate time-bound learning plan to bridge skill gaps |
 
-    <div style="text-align: center; color: rgba(255,255,255,0.2);">↓</div>
-
-    <div style="display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 1rem; background: rgba(255,255,255,0.05); border-left: 4px solid #EC4899;">
-      <div style="font-size: 1.5rem; font-weight: 800; color: #EC4899;">03</div>
-      <div><b>Analysis:</b> Upload resume for deep AI scoring & keyword gap analysis</div>
-    </div>
-
-    <div style="text-align: center; color: rgba(255,255,255,0.2);">↓</div>
-
-    <div style="display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 1rem; background: rgba(255,255,255,0.05); border-left: 4px solid #A855F7;">
-      <div style="font-size: 1.5rem; font-weight: 800; color: #A855F7;">04</div>
-      <div><b>Practice:</b> Engage with AI Mock Interviewer or technical skill quizzes</div>
-    </div>
-
-    <div style="text-align: center; color: rgba(255,255,255,0.2);">↓</div>
-
-    <div style="display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 1rem; background: rgba(255,255,255,0.05); border-left: 4px solid #3B82F6;">
-      <div style="font-size: 1.5rem; font-weight: 800; color: #3B82F6;">05</div>
-      <div><b>GPS Roadmap:</b> Generate time-bound learning plan to bridge skill gaps</div>
-    </div>
-  </div>
-  
-  <p style="text-align: center; margin-top: 3rem; color: rgba(255,255,255,0.4); font-size: 0.9rem;">
-    Designed and Developed for the Hackathon Evolution 2026.
-  </p>
+<div align="center" style="margin-top: 2rem; opacity: 0.5;">
+  <p>Designed and Developed for the Hackathon Evolution 2026.</p>
 </div>
 
 <br />
@@ -100,4 +71,3 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view your premium career hub.
-"# Final_hackthon" 
