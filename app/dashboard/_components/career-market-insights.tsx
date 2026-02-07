@@ -27,11 +27,11 @@ export default function CareerMarketInsights() {
         fetchData();
     }, []);
 
-    if (loading) return <div className="h-64 bg-white/5 animate-pulse rounded-[2rem] mt-12" />;
+    if (loading) return <div className="h-64 bg-black/[0.02] dark:bg-white/5 animate-pulse rounded-[2rem] mt-12" />;
 
     return (
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-            <div className="lg:col-span-2 glass rounded-[2rem] p-10 border border-white/10 relative overflow-hidden group">
+            <div className="lg:col-span-2 glass rounded-[2rem] p-10 border border-black/5 dark:border-white/10 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full -mr-32 -mt-32 blur-3xl transition-all group-hover:bg-purple-500/10" />
 
                 <h2 className="text-2xl font-black mb-10 flex items-center gap-4 relative z-10 tracking-tight">
@@ -43,7 +43,7 @@ export default function CareerMarketInsights() {
 
                 <div className="grid sm:grid-cols-2 gap-6 relative z-10">
                     {salaries.map((s, idx) => (
-                        <div key={idx} className="p-6 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between group/item hover:bg-white/10 transition-all duration-300">
+                        <div key={idx} className="p-6 rounded-2xl bg-black/[0.02] dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-between group/item hover:bg-black/[0.04] dark:hover:bg-white/10 transition-all duration-300">
                             <div>
                                 <p className="text-[10px] font-black opacity-50 mb-2 uppercase tracking-[0.2em]">{s.role}</p>
                                 <p className="text-xl font-black text-foreground/90 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">{s.range}</p>
@@ -56,7 +56,7 @@ export default function CareerMarketInsights() {
                 </div>
             </div>
 
-            <div className="glass rounded-[2rem] p-10 border border-white/10 relative overflow-hidden flex flex-col justify-between group">
+            <div className="glass rounded-[2rem] p-10 border border-black/5 dark:border-white/10 relative overflow-hidden flex flex-col justify-between group">
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full -ml-24 -mb-24 blur-3xl transition-all group-hover:bg-blue-500/10" />
 
                 <div className="relative z-10">
@@ -92,7 +92,7 @@ export default function CareerMarketInsights() {
                 </div>
 
                 <div className="mt-12 relative z-10">
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-3">
+                    <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-center gap-3">
                         <ShieldCheck className="w-4 h-4 text-purple-400" />
                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">Verified Data Points</span>
                     </div>

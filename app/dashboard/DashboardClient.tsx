@@ -14,7 +14,7 @@ const Background = dynamic(() => import('../../components/Background'), {
 // Memoized stat card component with Improved Styling
 const StatCard = memo(({ stat }: { stat: any }) => (
     <div
-        className="rounded-3xl p-6 glass card-shadow transform transition-all duration-500 hover:scale-105 hover:shadow-purple-500/10 border border-white/10 dark:border-white/5"
+        className="rounded-3xl p-6 glass card-shadow transform transition-all duration-500 hover:scale-105 hover:shadow-purple-500/10 border border-black/5 dark:border-white/10"
         role="article"
     >
         <div className={`inline-flex p-3 rounded-2xl mb-4 bg-gradient-to-br ${stat.color} shadow-lg shadow-purple-500/10`}>
@@ -32,7 +32,7 @@ const StatCard = memo(({ stat }: { stat: any }) => (
                     <span>Mastery</span>
                     <span>{stat.progress}%</span>
                 </div>
-                <div className="h-1.5 rounded-full bg-white/5 dark:bg-black/20 overflow-hidden border border-white/5">
+                <div className="h-1.5 rounded-full bg-slate-200 dark:bg-white/5 overflow-hidden border border-black/5 dark:border-white/5">
                     <div
                         className={`h-full bg-gradient-to-r ${stat.color} transition-all duration-1000 ease-out`}
                         style={{ width: `${stat.progress}%` }}
@@ -148,7 +148,7 @@ export default function DashboardClient({ initialStats, user }: DashboardClientP
                         Practice & Prepare
                     </h2>
                     <div className="grid md:grid-cols-2 gap-8">
-                        <Link href="/interview" className="group relative overflow-hidden rounded-[2rem] p-10 glass card-shadow hover:shadow-cyan-500/20 transition-all duration-500 hover:scale-[1.02] border border-white/10">
+                        <Link href="/interview" className="group relative overflow-hidden rounded-[2rem] p-10 glass card-shadow hover:shadow-cyan-500/20 transition-all duration-500 hover:scale-[1.02] border border-black/5 dark:border-white/10">
                             <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity text-cyan-500">
                                 <Video className="w-48 h-48" />
                             </div>
@@ -164,7 +164,7 @@ export default function DashboardClient({ initialStats, user }: DashboardClientP
                             </div>
                         </Link>
 
-                        <Link href="/assess" className="group relative overflow-hidden rounded-[2rem] p-10 glass card-shadow hover:shadow-purple-500/20 transition-all duration-500 hover:scale-[1.02] border border-white/10">
+                        <Link href="/assess" className="group relative overflow-hidden rounded-[2rem] p-10 glass card-shadow hover:shadow-purple-500/20 transition-all duration-500 hover:scale-[1.02] border border-black/5 dark:border-white/10">
                             <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity text-purple-500">
                                 <Trophy className="w-48 h-48" />
                             </div>

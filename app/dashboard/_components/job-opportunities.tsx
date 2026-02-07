@@ -35,7 +35,7 @@ export default function JobOpportunitiesSection() {
     }, []);
 
     return (
-        <aside className="rounded-[2rem] p-8 glass card-shadow border border-white/10 h-full flex flex-col hover:shadow-cyan-500/5 transition-all duration-500" aria-labelledby="job-opportunities-heading">
+        <aside className="rounded-[2rem] p-8 glass card-shadow border border-black/5 dark:border-white/10 h-full flex flex-col hover:shadow-cyan-500/5 transition-all duration-500" aria-labelledby="job-opportunities-heading">
             <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/20" aria-hidden="true">
                     <Briefcase className="w-8 h-8 text-white" />
@@ -47,7 +47,7 @@ export default function JobOpportunitiesSection() {
                 {loading ? (
                     <div className="space-y-4 animate-pulse">
                         {[1, 2, 3].map(i => (
-                            <div key={i} className="h-24 bg-white/5 rounded-2xl" />
+                            <div key={i} className="h-24 bg-black/[0.02] dark:bg-white/5 rounded-2xl" />
                         ))}
                     </div>
                 ) : (
@@ -57,7 +57,7 @@ export default function JobOpportunitiesSection() {
                             <h3 className="text-[10px] font-black text-foreground/50 uppercase tracking-[0.2em]">High Growth Roles</h3>
                             <div className="space-y-3">
                                 {marketSummary?.fastest_growing?.slice(0, 2).map((role, index) => (
-                                    <article key={index} className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 transition-all hover:bg-white/10 group">
+                                    <article key={index} className="flex items-start gap-4 p-4 rounded-2xl bg-black/[0.02] dark:bg-white/5 border border-black/5 dark:border-white/5 transition-all hover:bg-black/[0.04] dark:hover:bg-white/10 group">
                                         <div className="p-2 rounded-xl bg-orange-500/10 group-hover:scale-110 transition-transform" aria-hidden="true">
                                             <TrendingUp className="w-5 h-5 text-orange-400" />
                                         </div>
@@ -75,11 +75,11 @@ export default function JobOpportunitiesSection() {
 
                         {/* In-Demand Skills */}
                         {skillsData?.technical_skills && (
-                            <div className="space-y-5 pt-8 border-t border-white/5">
+                            <div className="space-y-5 pt-8 border-t border-black/5 dark:border-white/5">
                                 <h3 className="text-[10px] font-black text-foreground/50 uppercase tracking-[0.2em]">Critical Skills</h3>
                                 <div className="space-y-3">
                                     {skillsData.technical_skills.slice(0, 3).map((s: any, idx: number) => (
-                                        <div key={idx} className="flex justify-between items-center bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition-colors">
+                                        <div key={idx} className="flex justify-between items-center bg-black/[0.02] dark:bg-white/5 p-4 rounded-2xl hover:bg-black/[0.04] dark:hover:bg-white/10 transition-colors">
                                             <span className="text-sm font-bold text-foreground/80">{s.skill}</span>
                                             <span className="text-[10px] font-black px-2 py-1 bg-purple-500/10 text-purple-400 rounded-lg uppercase tracking-wider">{s.growth} trend</span>
                                         </div>
@@ -90,7 +90,7 @@ export default function JobOpportunitiesSection() {
 
                         {/* Hot Skills Tags */}
                         {marketSummary?.hot_skills && (
-                            <div className="pt-8 border-t border-white/5">
+                            <div className="pt-8 border-t border-black/5 dark:border-white/5">
                                 <h3 className="text-[10px] font-black text-foreground/50 uppercase tracking-[0.2em] mb-4">Trending Tech</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {marketSummary.hot_skills.map((skill, idx) => (
