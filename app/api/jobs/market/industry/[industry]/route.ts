@@ -1,18 +1,31 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function GET(
     req: Request,
-    { params }: { params: { industry: string } }
+    { params }: { params: Promise<{ industry: string }> }
 ) {
-    // Await params to ensure it is resolved before access
-    const resolvedParams = await Promise.resolve(params);
+    const { searchParams } = new URL(req.url);
+    const resolvedParams = await params;
     const industry = resolvedParams.industry;
 
-    return NextResponse.json({
-        industry: industry,
-        outlook: "Positive",
-        growth_rate: "5%",
-        top_companies: ["Company A", "Company B"],
-        trends: ["Remote work", "AI integration"]
-    });
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/jobs/market/industry/${industry}?${searchParams.toString()}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
+    } catch (error) {
+        console.error(`[market/industry/${industry}] Error:`, error);
+        return NextResponse.json(
+            { status: "error", message: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
 }

@@ -1,10 +1,15 @@
 "use client"
 import { Trophy, TrendingUp, Zap, Sparkles, Brain, Briefcase, Video, CheckCircle } from 'lucide-react';
-import { useMemo, memo } from "react";
+import { useMemo, memo, useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
-import Background from '../../components/Background';
 import Link from 'next/link';
 import { MOCK_DATA } from '@/app/lib/api-config';
+import DashboardLoading from './loading';
+
+const Background = dynamic(() => import('../../components/Background'), {
+    ssr: false,
+    loading: () => <div className="fixed inset-0 bg-background -z-10" />
+});
 
 // Memoized stat card component
 const StatCard = memo(({ stat }: { stat: any }) => (
@@ -69,10 +74,37 @@ const JobOpportunitiesSection = dynamic(() => import('./_components/job-opportun
 
 export default function DashboardClient({ initialStats, user }: DashboardClientProps) {
     const statsData = initialStats || MOCK_DATA.dashboard.stats;
+    const [isLoading, setIsLoading] = useState(true);
+    const [isContentVisible, setIsContentVisible] = useState(false);
+
+    // Handle initial loading and smooth transition
+    useEffect(() => {
+        let mounted = true;
+        let contentTimeout: NodeJS.Timeout | undefined;
+
+        // Simulate minimum loading time for UX (show loading for at least 800ms)
+        const minLoadTime = setTimeout(() => {
+            if (mounted) {
+                setIsLoading(false);
+                // Add small delay before showing content for smooth transition
+                contentTimeout = setTimeout(() => {
+                    if (mounted) {
+                        setIsContentVisible(true);
+                    }
+                }, 50);
+            }
+        }, 800);
+
+        return () => {
+            mounted = false;
+            clearTimeout(minLoadTime);
+            if (contentTimeout) clearTimeout(contentTimeout);
+        };
+    }, []);
 
     // Stats memoization
     const stats = useMemo(() => {
-        const data = statsData;
+        const data = initialStats?.stats || initialStats || MOCK_DATA.dashboard.stats?.stats || MOCK_DATA.dashboard.stats;
 
         return [
             { icon: <Brain className="w-6 h-6" />, value: `${data.profile_score}%`, label: "Profile Score", color: "from-purple-500 to-indigo-500", progress: data.profile_score },
@@ -84,8 +116,13 @@ export default function DashboardClient({ initialStats, user }: DashboardClientP
         ];
     }, [statsData]);
 
+    // Show loading screen while loading
+    if (isLoading) {
+        return <DashboardLoading />;
+    }
+
     return (
-        <div className="min-h-screen relative transition-colors duration-300 bg-background text-foreground">
+        <div className={`min-h-screen relative transition-all duration-500 bg-background text-foreground ${isContentVisible ? 'opacity-100' : 'opacity-0'}`}>
             <Background />
 
             {/* Main Content */}

@@ -2,7 +2,12 @@
 import React, { useState } from 'react';
 import { useUser } from "@clerk/nextjs";
 import { CheckCircle, XCircle, AlertCircle, Trophy, Target, Award, PlayCircle } from 'lucide-react';
-import Background from '../../components/Background';
+import dynamic from 'next/dynamic';
+
+const Background = dynamic(() => import('../../components/Background'), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-background -z-10" />
+});
 import { fetchWithFallback, MOCK_DATA } from '../lib/api-config';
 
 function SkillQuiz() {
@@ -26,7 +31,7 @@ function SkillQuiz() {
     setSubmitted(false);
     setEvaluation(null);
 
-    const userId = user?.username || user?.id || 'user_demo';
+    const userId = user?.username || user?.primaryEmailAddress?.emailAddress || user?.id || 'user_demo';
 
     try {
       const payload = {
@@ -58,7 +63,7 @@ function SkillQuiz() {
 
   const calculateScore = async () => {
     setEvaluating(true);
-    const userId = user?.username || user?.id || 'user_demo';
+    const userId = user?.username || user?.primaryEmailAddress?.emailAddress || user?.id || 'user_demo';
 
     try {
       const payload = {
@@ -161,6 +166,7 @@ function SkillQuiz() {
             <button
               onClick={generateQuiz}
               disabled={loading || !skill.trim()}
+              aria-label="Start skill assessment quiz"
               className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-lg shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
@@ -230,6 +236,7 @@ function SkillQuiz() {
                           key={opt}
                           onClick={() => handleAnswerSelect(i, opt)}
                           disabled={submitted}
+                          aria-label={`Select option ${opt}`}
                           className={`p-4 rounded-xl text-left transition-all font-medium ${btnClass}`}
                         >
                           {opt}
@@ -253,6 +260,7 @@ function SkillQuiz() {
               <button
                 onClick={calculateScore}
                 disabled={Object.keys(userAnswers).length !== result.questions.length || evaluating}
+                aria-label="Submit completed assessment for evaluation"
                 className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 transition-all shadow-lg disabled:opacity-50"
               >
                 {evaluating ? "Evaluating..." : "Submit Assessment"}

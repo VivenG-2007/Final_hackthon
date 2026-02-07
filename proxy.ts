@@ -1,4 +1,3 @@
-
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
@@ -11,18 +10,15 @@ const isPublicRoute = createRouteMatcher([
   '/services(.*)',
   '/api/webhook(.*)',
   '/contact(.*)',
+  '/api/(.*)', // Added this to allow proxy calls to work without redirection loops
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
   const { userId } = await auth();
   const url = request.nextUrl;
 
-  console.log('Path:', url.pathname);
-  console.log('Hash:', url.hash);
-  console.log('Search params:', Object.fromEntries(url.searchParams));
-
+  // SSO and Sign-in redirects
   if (url.pathname === '/sign-up' && url.hash.includes('sso-callback')) {
-    console.log('SSO callback detected, redirecting to home');
     const homeUrl = new URL('/', request.url);
     return NextResponse.redirect(homeUrl);
   }

@@ -11,7 +11,7 @@ export default function JobRecommendations() {
 
     useEffect(() => {
         const fetchJobs = async () => {
-            const userId = user?.username || user?.id || 'user_demo';
+            const userId = user?.username || user?.primaryEmailAddress?.emailAddress || user?.id || 'user_demo';
             try {
                 const data = await fetchWithFallback(
                     '/api/webhook/jobs/recommend',

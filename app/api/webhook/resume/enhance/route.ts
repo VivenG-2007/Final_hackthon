@@ -1,18 +1,22 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        return NextResponse.json({
-            status: "ok",
-            enhanced: {
-                enhanced_resume: "## John Doe\n\n**Backend Developer**\n\n- Passionate developer with 5+ years of experience...\n- Built scalable REST APIs using FastAPI and PostgreSQL.",
-                changes: ["Added action verbs", "Quantified achievements"],
-                ats_score_before: 45,
-                ats_score_after: 78
-            }
+        const response = await fetch(`${BACKEND_URL}/api/webhook/resume/enhance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error) {
         console.error('[resume/enhance] Error:', error);
         return NextResponse.json(

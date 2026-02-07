@@ -1,30 +1,22 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        return NextResponse.json({
-            status: "ok",
-            jobs: [
-                {
-                    title: "Backend Developer",
-                    match_percent: 90,
-                    skills_matched: ["Python", "FastAPI", "PostgreSQL", "Docker"],
-                    skills_to_learn: ["AWS", "Kubernetes"],
-                    salary_range_usd: "$90,000 - $130,000",
-                    growth_outlook: "strong"
-                },
-                {
-                    title: "DevOps Engineer",
-                    match_percent: 65,
-                    skills_matched: ["Docker", "Python"],
-                    skills_to_learn: ["Terraform", "CI/CD"],
-                    salary_range_usd: "$100,000 - $150,000",
-                    growth_outlook: "strong"
-                }
-            ]
+        const response = await fetch(`${BACKEND_URL}/api/webhook/jobs/recommend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error) {
         console.error('[jobs/recommend] Error:', error);
         return NextResponse.json(

@@ -1,30 +1,22 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        return NextResponse.json({
-            status: "ok",
-            plan_id: "plan_abc123",
-            plan: [
-                {
-                    skill: "AWS",
-                    priority: "high",
-                    resources: [
-                        { title: "AWS Certified Solutions Architect", type: "course", platform: "Udemy" },
-                        { title: "AWS Free Tier Hands-on", type: "practice", platform: "AWS" }
-                    ]
-                },
-                {
-                    skill: "Kubernetes",
-                    priority: "high",
-                    resources: [
-                        { title: "Kubernetes Basics", type: "course", platform: "Coursera" }
-                    ]
-                }
-            ]
+        const response = await fetch(`${BACKEND_URL}/api/webhook/learning/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error) {
         console.error('[learning/generate] Error:', error);
         return NextResponse.json(

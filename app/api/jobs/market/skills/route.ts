@@ -1,14 +1,25 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function GET(req: Request) {
-    return NextResponse.json({
-        technical_skills: [
-            { "skill": "AI/Machine Learning", "demand": "critical", "growth": "65%" },
-            { "skill": "Cloud Computing", "demand": "critical", "growth": "45%" }
-        ],
-        soft_skills: [
-            { "skill": "Adaptability", "demand": "high" },
-            { "skill": "Communication", "demand": "high" }
-        ]
-    });
+    const { searchParams } = new URL(req.url);
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/jobs/market/skills?${searchParams.toString()}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
+    } catch (error) {
+        console.error('[market/skills] Error:', error);
+        return NextResponse.json(
+            { status: "error", message: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
 }

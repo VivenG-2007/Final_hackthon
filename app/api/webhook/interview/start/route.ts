@@ -1,27 +1,22 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        return NextResponse.json({
-            status: "ok",
-            interview_id: "int_abc123",
-            questions: [
-                {
-                    text: "Explain the difference between a list and tuple in Python.",
-                    type: "technical",
-                    expected_points: ["Mutability", "Performance", "Use cases"],
-                    difficulty: "medium"
-                },
-                {
-                    text: "Tell me about a challenging project you worked on.",
-                    type: "behavioral",
-                    expected_points: ["Problem description", "Actions taken", "Results"],
-                    difficulty: "medium"
-                }
-            ]
+        const response = await fetch(`${BACKEND_URL}/api/webhook/interview/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error) {
         console.error('[interview/start] Error:', error);
         return NextResponse.json(

@@ -1,26 +1,22 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/app/lib/api-config';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        return NextResponse.json({
-            status: "ok",
-            skill: body.data?.skill || "Python",
-            questions: [
-                {
-                    question: "What will `[1,2,3] * 2` return?",
-                    options: [
-                        "A) [2, 4, 6]",
-                        "B) [1, 2, 3, 1, 2, 3]",
-                        "C) [1, 2, 3, 2]",
-                        "D) Error"
-                    ],
-                    correct: "B",
-                    explanation: "The * operator replicates the list."
-                }
-            ]
+        const response = await fetch(`${BACKEND_URL}/api/webhook/quiz/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            throw new Error(`Backend responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (error) {
         console.error('[quiz/generate] Error:', error);
         return NextResponse.json(

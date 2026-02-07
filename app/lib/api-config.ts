@@ -1,45 +1,59 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+export const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000';
+// On server, we skip the Next.js proxy and go to backend directly to avoid auth/middleware loops
+export const API_BASE_URL = typeof window !== 'undefined' ? '' : BACKEND_URL;
 
 // Mock data for fallback when API is unavailable
 export const MOCK_DATA = {
     dashboard: {
         stats: {
-            skills_assessed: 3,
-            achievements: 5,
-            profile_score: 78,
-            streak_days: 0,
-            interviews_completed: 2,
-            resumes_analyzed: 1
+            stats: {
+                skills_assessed: 3,
+                achievements: 5,
+                profile_score: 78,
+                streak_days: 12,
+                interviews_completed: 4,
+                resumes_analyzed: 8
+            }
         }
     },
     resume: {
-        analysis: {
-            status: "ok",
-            analysis: {
-                score: 72,
-                grade: 'B',
-                summary: 'Strong technical background with room for improvement in quantifiable achievements.',
-                categories: {
-                    format: 15,
-                    experience: 20,
-                    skills: 22,
-                    education: 10,
-                    achievements: 5
-                },
-                strengths: ['Python expertise', 'Leadership experience'],
-                improvements: ['Add metrics', 'Include certifications'],
-                keywords_missing: ['AWS', 'Kubernetes'],
-                market_readiness: 'medium'
-            }
+        analysis: (payload: any) => {
+            const data = payload?.data || {};
+            const role = data.target_role || "General";
+            return {
+                status: "ok",
+                analysis: {
+                    score: Math.floor(Math.random() * (85 - 65) + 65), // Random score between 65-85
+                    grade: 'B',
+                    summary: `Strong technical background for ${role}, but could use more quantifiable achievements.`,
+                    categories: {
+                        format: Math.floor(Math.random() * 5 + 15),
+                        experience: Math.floor(Math.random() * 5 + 15),
+                        skills: Math.floor(Math.random() * 5 + 20),
+                        education: 10,
+                        achievements: 5
+                    },
+                    strengths: ['Relevant Tech Stack', 'Leadership experience'],
+                    improvements: ['Add metrics to experience', 'Include more keywords relevant to ' + role],
+                    keywords_missing: ['AWS', 'Kubernetes', 'System Design'],
+                    market_readiness: 'medium'
+                }
+            };
         },
-        enhanced: {
-            status: "ok",
-            enhanced: {
-                enhanced_resume: "## John Doe\n\n**Backend Developer**\n\n- Passionate developer with 5+ years of experience...\n- Built scalable REST APIs using FastAPI and PostgreSQL.",
-                changes: ["Added action verbs", "Quantified achievements"],
-                ats_score_before: 45,
-                ats_score_after: 78
-            }
+        enhanced: (payload: any) => {
+            const data = payload?.data || {};
+            const original = data.resume_text || "";
+            return {
+                status: "ok",
+                enhanced: {
+                    enhanced_resume: `## Enhanced Profile\n\n**${data.target_role || "Professional"}**\n\n${original}\n\n### Key Improvements\n- Added strong action verbs.\n- Structure optimized for ATS.`,
+                    changes: ["Added action verbs", "Quantified achievements", "Optimized keywords"],
+                    ats_score_before: 45,
+                    ats_score_after: Math.floor(Math.random() * (95 - 80) + 80)
+                }
+            };
         },
         generate: (payload: any) => {
             const data = payload?.data || {};
@@ -87,65 +101,168 @@ export const MOCK_DATA = {
         }
     },
     interview: {
-        session: {
-            status: "ok",
-            interview_id: "int_abc123",
-            questions: [
-                {
-                    text: "Explain the difference between a list and tuple in Python.",
-                    type: "technical",
-                    expected_points: ["Mutability", "Performance", "Use cases"],
-                    difficulty: "medium"
-                },
-                {
-                    text: "Tell me about a challenging project you worked on.",
-                    type: "behavioral",
-                    expected_points: ["Problem description", "Actions taken", "Results"],
-                    difficulty: "medium"
+        session: (payload: any) => {
+            const data = payload?.data || {};
+            const role = data.role || "Software Engineer";
+            const domain = (data.domain || "general").toLowerCase();
+            const count = data.num_questions || 3;
+
+            const commonQuestions = [
+                "Tell me about a challenging project you worked on.",
+                "Describe a time you had a conflict with a team member and how you resolved it.",
+                "What is your greatest professional achievement?",
+                "Where do you see yourself in 5 years?",
+                "How do you handle tight deadlines?"
+            ];
+
+            const frontendQuestions = [
+                "How do you optimize React application performance?",
+                "Explain the concept of Virtual DOM.",
+                "What is the difference between specific CSS, CSS Modules, and CSS-in-JS?",
+                "Explain the React useEffect cleanup function.",
+                "How do you handle state management in large scale applications?"
+            ];
+
+            const backendQuestions = [
+                "Discuss the pros and cons of Microservices vs Monolithic architecture.",
+                "How do you handle database transactions and ACID properties?",
+                "Explain RESTful API design principles.",
+                "What strategies do you use for database scaling?",
+                "How do you ensure API security?"
+            ];
+
+            const mlQuestions = [
+                "Explain the bias-variance tradeoff.",
+                "How do you select important features for your model?",
+                "Describe different regularization techniques.",
+                "How do you handle imbalanced datasets?",
+                "Explain the difference between bagging and boosting."
+            ];
+
+            let outputQuestions = [];
+            outputQuestions.push({
+                text: commonQuestions[Math.floor(Math.random() * commonQuestions.length)],
+                type: "behavioral",
+                expected_points: ["Situation", "Action", "Result"],
+                difficulty: "medium"
+            });
+
+            let domainPool = [];
+            if (domain.includes('front')) domainPool = frontendQuestions;
+            else if (domain.includes('back')) domainPool = backendQuestions;
+            else if (domain.includes('data') || domain.includes('ml') || domain.includes('ai')) domainPool = mlQuestions;
+            else domainPool = [...frontendQuestions, ...backendQuestions];
+
+            const shuffled = domainPool.sort(() => 0.5 - Math.random());
+
+            for (let i = 0; i < count - 1; i++) {
+                if (shuffled[i]) {
+                    outputQuestions.push({
+                        text: shuffled[i],
+                        type: "technical",
+                        expected_points: ["Technical accuracy", "Best practices"],
+                        difficulty: "hard"
+                    });
+                } else {
+                    outputQuestions.push({
+                        text: `Explain a core concept in ${role}.`,
+                        type: "technical",
+                        expected_points: ["Knowledge", "Clarity"],
+                        difficulty: "medium"
+                    });
                 }
-            ]
+            }
+
+            return {
+                status: "ok",
+                interview_id: `int_${Date.now()}`,
+                questions: outputQuestions.slice(0, count)
+            };
         },
         evaluation: {
             status: "ok",
             evaluation: {
-                score: 68,
-                grade: "C+",
+                score: Math.floor(Math.random() * 30 + 60),
+                grade: "B",
                 feedback: "Good understanding of basics but lacks depth in edge cases.",
-                strengths: ["Mentioned HTTP methods correctly"],
+                strengths: ["Mentioned core concepts"],
                 improvements: ["Add examples", "Discuss error handling"],
                 would_hire: false
             }
         },
-        voice_process: {
-            status: "ok",
-            evaluation: {
-                score: 65,
-                grade: "C",
-                feedback: "Mentioned relevant frameworks but lacks specific examples...",
-                strengths: ["Relevant tech stack"],
-                improvements: ["Give concrete project examples"]
-            },
-            response_text: "Good start. Next: What databases have you worked with?",
-            is_complete: false
+        voice_process: (payload: any) => {
+            const data = payload?.data || {};
+            const context = data.context || {};
+            const idx = context.question_index || 0;
+            const userResponse = data.transcript || "";
+
+            const positivePhrases = ["Good point.", "I see.", "That makes sense.", "Interesting perspective.", "Okay, good."];
+            const randomPhrase = positivePhrases[Math.floor(Math.random() * positivePhrases.length)];
+
+            const nextQuestions = [
+                "Can you elaborate on the technical challenges?",
+                "How did you handle the testing for that?",
+                "What would you do differently next time?",
+                "Do you have experience with CI/CD?",
+                "That concludes our technical session. Do you have any questions?"
+            ];
+
+            const nextQ = context.next_question || nextQuestions[idx] || "Thank you, the interview is complete.";
+            const isComplete = idx >= (context.total_questions || 4);
+            const score = Math.min(95, 40 + (userResponse.length / 5));
+
+            return {
+                status: "ok",
+                evaluation: {
+                    score: Math.round(score),
+                    grade: score > 80 ? "A" : score > 60 ? "B" : "C",
+                    feedback: "Good structured response. Keep providing specific examples.",
+                    strengths: ["Clear communication", "Relevant terminology"],
+                    improvements: ["Provide more quantitative results"]
+                },
+                response_text: `${randomPhrase} ${nextQ}`,
+                is_complete: isComplete
+            };
         }
     },
     quiz: {
-        generate: {
-            status: "ok",
-            skill: "Python",
-            questions: [
-                {
-                    question: "What will `[1,2,3] * 2` return?",
-                    options: [
-                        "A) [2, 4, 6]",
-                        "B) [1, 2, 3, 1, 2, 3]",
-                        "C) [1, 2, 3, 2]",
-                        "D) Error"
-                    ],
-                    correct: "B",
-                    explanation: "The * operator replicates the list."
-                }
-            ]
+        generate: (payload: any) => {
+            const data = payload?.data || {};
+            const skill = data.skill || "General";
+
+            const pythonQuestions = [
+                { q: "What is a decorator?", o: ["A) A function affecting another function", "B) A class attribute", "C) A fast compiler", "D) A database connector"], c: "A", e: "Decorators modify the behavior of functions or classes." },
+                { q: "What is the difference between list and tuple?", o: ["A) Tuple is immutable", "B) List is immutable", "C) They are same", "D) Tuple can only store numbers"], c: "A", e: "Tuples cannot be changed after creation." },
+                { q: "How is memory managed in Python?", o: ["A) Manual allocation", "B) Private heap space", "C) No memory management", "D) Stack only"], c: "B", e: "Python assumes a private heap managed by the interpreter." },
+                { q: "What is PEP 8?", o: ["A) A game", "B) Style guide for Python", "C) A compiler", "D) A web framework"], c: "B", e: "PEP 8 is the standard style guide for Python code." }
+            ];
+
+            const reactQuestions = [
+                { q: "What is the Virtual DOM?", o: ["A) A copy of the real DOM in memory", "B) A browser plugin", "C) A database", "D) A CSS file"], c: "A", e: "React uses Virtual DOM to optimize updates." },
+                { q: "What hook is used for side effects?", o: ["A) useState", "B) useEffect", "C) useReducer", "D) useContext"], c: "B", e: "useEffect handles side effects like data fetching definitions." },
+                { q: "What is JSX?", o: ["A) Java XML", "B) JavaScript XML", "C) JSON XML", "D) Java Syntax"], c: "B", e: "JSX produces React 'elements'." }
+            ];
+
+            let pool = [];
+            if (skill.toLowerCase().includes('python')) pool = pythonQuestions;
+            else if (skill.toLowerCase().includes('react')) pool = reactQuestions;
+            else pool = [
+                { q: `What is a key feature of ${skill}?`, o: [`A) High performance`, `B) Loose typing`, `C) Compiled execution`, `D) None of the above`], c: "A", e: `${skill} is known for its capabilities.` },
+                { q: `Which paradigm does ${skill} primarily support?`, o: [`A) Object Oriented`, `B) Functional`, `C) Procedural`, `D) Multi-paradigm`], c: "D", e: `Most modern languages like ${skill} are multi-paradigm.` }
+            ];
+
+            const outputQuestions = pool.sort(() => 0.5 - Math.random()).slice(0, 3).map(item => ({
+                question: item.q,
+                options: item.o,
+                correct: item.c,
+                explanation: item.e
+            }));
+
+            return {
+                status: "ok",
+                skill: skill,
+                questions: outputQuestions
+            };
         },
         evaluate: (payload: any) => {
             const data = payload?.data || {};
@@ -177,31 +294,35 @@ export const MOCK_DATA = {
                     feedback: score >= 70 ? "Great job!" : "Keep practicing!",
                     details: details
                 },
-                quiz_id: "quiz_abc123"
+                quiz_id: "quiz_" + Math.random().toString(36).substr(2, 9)
             };
         }
     },
     jobs: {
-        recommend: {
-            status: "ok",
-            jobs: [
-                {
-                    title: "Backend Developer",
-                    match_percent: 90,
-                    skills_matched: ["Python", "FastAPI", "PostgreSQL", "Docker"],
-                    skills_to_learn: ["AWS", "Kubernetes"],
-                    salary_range_usd: "$90,000 - $130,000",
-                    growth_outlook: "strong"
-                },
-                {
-                    title: "DevOps Engineer",
-                    match_percent: 65,
-                    skills_matched: ["Docker", "Python"],
-                    skills_to_learn: ["Terraform", "CI/CD"],
-                    salary_range_usd: "$100,000 - $150,000",
-                    growth_outlook: "strong"
-                }
-            ]
+        recommend: (payload: any) => {
+            const data = payload?.data || {};
+            const role = data.target_role || "Developer";
+            return {
+                status: "ok",
+                jobs: [
+                    {
+                        title: `Senior ${role}`,
+                        match_percent: Math.floor(Math.random() * (98 - 85) + 85),
+                        skills_matched: data.skills || ["React", "Node.js"],
+                        skills_to_learn: ["System Design", "Cloud Architecture"],
+                        salary_range_usd: "$120,000 - $160,000",
+                        growth_outlook: "strong"
+                    },
+                    {
+                        title: `Lead ${role}`,
+                        match_percent: Math.floor(Math.random() * (85 - 70) + 70),
+                        skills_matched: [(data.skills?.[0] || "Coding")],
+                        skills_to_learn: ["Team Leadership", "Strategic Planning"],
+                        salary_range_usd: "$140,000 - $190,000",
+                        growth_outlook: "very strong"
+                    }
+                ]
+            };
         },
         market: {
             skills: {
@@ -227,46 +348,51 @@ export const MOCK_DATA = {
             salaries: {
                 roles: [
                     { "role": "Backend Engineer", "range": "$120k - $180k" },
-                    { "role": "ML Engineer", "range": "$130k - $200k" }
+                    { "role": "ML Engineer", "range": "$130k - $200k" },
+                    { "role": "Frontend Architect", "range": "$130k - $190k" }
                 ]
             },
             industry: (industry: string) => {
                 const data: any = {
                     technology: { "outlook": "positive", "growth_rate": "12%" },
-                    healthcare: { "outlook": "stable", "growth_rate": "8%" }
+                    healthcare: { "outlook": "stable", "growth_rate": "8%" },
+                    finance: { "outlook": "transforming", "growth_rate": "5%" }
                 };
                 return data[industry] || { "outlook": "neutral", "growth_rate": "0%" };
             },
-            skill_gap: {
-                target_role: "ML Engineer",
-                skills_matched: ["python"],
-                skills_missing: ["tensorflow", "pytorch", "mlops"],
-                match_percent: 25,
-                priority_skills: ["tensorflow", "pytorch"]
+            skill_gap: (payload: any) => {
+                const target = payload?.target_role || "Engineer";
+                const skills = payload?.skills || [];
+                return {
+                    target_role: target,
+                    skills_matched: skills.slice(0, 2),
+                    skills_missing: ["Kubernetes", "GraphQL", "System Design"],
+                    match_percent: Math.min(100, (skills.length * 10) + 20),
+                    priority_skills: ["Kubernetes", "System Design"]
+                };
             }
         }
     },
     learning: {
-        generate: {
-            status: "ok",
-            plan_id: "plan_abc123",
-            plan: [
-                {
-                    skill: "AWS",
-                    priority: "high",
-                    resources: [
-                        { title: "AWS Certified Solutions Architect", type: "course", platform: "Udemy" },
-                        { title: "AWS Free Tier Hands-on", type: "practice", platform: "AWS" }
-                    ]
-                },
-                {
-                    skill: "Kubernetes",
-                    priority: "high",
-                    resources: [
-                        { title: "Kubernetes Basics", type: "course", platform: "Coursera" }
-                    ]
-                }
-            ]
+        generate: (payload: any) => {
+            const data = payload?.data || {};
+            const gaps = data.gaps || ["New Skill"];
+            const role = data.target_role || "Expert";
+
+            const plan = gaps.map((gap: string) => ({
+                skill: gap,
+                priority: "high",
+                resources: [
+                    { title: `Mastering ${gap} for ${role}`, type: "course", platform: "Udemy" },
+                    { title: `${gap} Best Practices`, type: "practice", platform: "Official Docs" }
+                ]
+            }));
+
+            return {
+                status: "ok",
+                plan_id: `plan_${Date.now()}`,
+                plan: plan
+            };
         }
     }
 };
@@ -278,6 +404,8 @@ export async function fetchWithFallback<T>(
     mockData?: T | ((payload: any) => T)
 ): Promise<T> {
     try {
+        // We use relative URLs for proxies. 
+        // fetchWithFallback(endpoint) where endpoint = "/api/..."
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
             headers: {
@@ -296,12 +424,10 @@ export async function fetchWithFallback<T>(
         console.warn(`API call failed, using mock data for ${endpoint}:`, error);
 
         if (mockData) {
-            // Check if mockData is a function (dynamic generator)
             if (typeof mockData === 'function') {
                 try {
-                    // Start mainly for the resume generation case
                     const payload = options?.body ? JSON.parse(options.body as string) : {};
-                    // @ts-ignore - We know it's a function based on the check above
+                    // @ts-ignore
                     return mockData(payload);
                 } catch (e) {
                     console.error("Failed to generate dynamic mock data", e);
