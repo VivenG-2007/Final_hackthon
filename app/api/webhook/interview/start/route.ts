@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { BACKEND_URL } from '@/app/lib/api-config';
+import { BACKEND_URL, MOCK_DATA } from '@/app/lib/api-config';
 
 export async function POST(req: Request) {
+    let body;
     try {
-        const body = await req.json();
+        body = await req.json();
 
         const response = await fetch(`${BACKEND_URL}/api/webhook/interview/start`, {
             method: 'POST',
@@ -17,11 +18,13 @@ export async function POST(req: Request) {
 
         const data = await response.json();
         return NextResponse.json(data);
-    } catch (error) {
-        console.error('[interview/start] Error:', error);
-        return NextResponse.json(
-            { status: "error", message: "Internal Server Error" },
-            { status: 500 }
-        );
+    } catch (error: any) {
+        console.warn('[interview/start] Backend unavailable, using mock data:', error.message);
+
+        const mockResponse = typeof MOCK_DATA.interview.session === 'function'
+            ? MOCK_DATA.interview.session(body)
+            : MOCK_DATA.interview.session;
+
+        return NextResponse.json(mockResponse);
     }
 }

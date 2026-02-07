@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       signInFallbackRedirectUrl="/dashboard"
       signUpFallbackRedirectUrl="/dashboard"
     >
-      <html>
+      <html suppressHydrationWarning>
         <head>
           <script
             dangerouslySetInnerHTML={{
@@ -30,8 +30,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 (function() {
                   try {
                     const theme = localStorage.getItem('theme');
-                    if (theme === 'light') {
+                    const isLight = theme === 'light';
+                    if (isLight) {
                       document.documentElement.setAttribute('data-theme', 'light');
+                      document.documentElement.classList.remove('dark');
+                    } else {
+                      document.documentElement.removeAttribute('data-theme');
+                      document.documentElement.classList.add('dark');
                     }
                   } catch (e) {}
                 })()

@@ -13,8 +13,8 @@ export const MOCK_DATA = {
                 achievements: 5,
                 profile_score: 78,
                 streak_days: 12,
-                interviews_completed: 4,
-                resumes_analyzed: 8
+                interviews_completed: 2,
+                resumes_analyzed: 1
             }
         }
     },
@@ -105,78 +105,45 @@ export const MOCK_DATA = {
             const data = payload?.data || {};
             const role = data.role || "Software Engineer";
             const domain = (data.domain || "general").toLowerCase();
-            const count = data.num_questions || 3;
+            const count = data.num_questions || 5;
 
-            const commonQuestions = [
-                "Tell me about a challenging project you worked on.",
-                "Describe a time you had a conflict with a team member and how you resolved it.",
-                "What is your greatest professional achievement?",
-                "Where do you see yourself in 5 years?",
-                "How do you handle tight deadlines?"
-            ];
-
-            const frontendQuestions = [
-                "How do you optimize React application performance?",
-                "Explain the concept of Virtual DOM.",
-                "What is the difference between specific CSS, CSS Modules, and CSS-in-JS?",
-                "Explain the React useEffect cleanup function.",
-                "How do you handle state management in large scale applications?"
-            ];
-
-            const backendQuestions = [
-                "Discuss the pros and cons of Microservices vs Monolithic architecture.",
-                "How do you handle database transactions and ACID properties?",
-                "Explain RESTful API design principles.",
-                "What strategies do you use for database scaling?",
-                "How do you ensure API security?"
-            ];
-
-            const mlQuestions = [
-                "Explain the bias-variance tradeoff.",
-                "How do you select important features for your model?",
-                "Describe different regularization techniques.",
-                "How do you handle imbalanced datasets?",
-                "Explain the difference between bagging and boosting."
-            ];
-
-            let outputQuestions = [];
-            outputQuestions.push({
-                text: commonQuestions[Math.floor(Math.random() * commonQuestions.length)],
-                type: "behavioral",
-                expected_points: ["Situation", "Action", "Result"],
-                difficulty: "medium"
-            });
-
-            let domainPool = [];
-            if (domain.includes('front')) domainPool = frontendQuestions;
-            else if (domain.includes('back')) domainPool = backendQuestions;
-            else if (domain.includes('data') || domain.includes('ml') || domain.includes('ai')) domainPool = mlQuestions;
-            else domainPool = [...frontendQuestions, ...backendQuestions];
-
-            const shuffled = domainPool.sort(() => 0.5 - Math.random());
-
-            for (let i = 0; i < count - 1; i++) {
-                if (shuffled[i]) {
-                    outputQuestions.push({
-                        text: shuffled[i],
-                        type: "technical",
-                        expected_points: ["Technical accuracy", "Best practices"],
-                        difficulty: "hard"
-                    });
-                } else {
-                    outputQuestions.push({
-                        text: `Explain a core concept in ${role}.`,
-                        type: "technical",
-                        expected_points: ["Knowledge", "Clarity"],
-                        difficulty: "medium"
-                    });
+            const questions = [
+                {
+                    text: `Explain one of your most challenging projects as a ${role}.`,
+                    type: "technical",
+                    expected_points: ["Problem statement", "Your specific contribution", "Impact"],
+                    difficulty: "medium"
+                },
+                {
+                    text: `How do you stay updated with the latest trends in ${domain}?`,
+                    type: "technical",
+                    expected_points: ["Resources used", "Learning method", "Recent trend"],
+                    difficulty: "medium"
+                },
+                {
+                    text: "Tell me about a time you had to deal with a difficult team member.",
+                    type: "behavioral",
+                    expected_points: ["Conflict context", "Action taken", "Resolution"],
+                    difficulty: "easy"
+                },
+                {
+                    text: `What are the core principles of ${domain} that you follow in your daily work?`,
+                    type: "technical",
+                    expected_points: ["Best practices", "Scalability", "Maintainability"],
+                    difficulty: "hard"
+                },
+                {
+                    text: "Where do you see your career path evolving in the next 3 years?",
+                    type: "behavioral",
+                    expected_points: ["Growth goals", "Skill acquisition", "Role aspiration"],
+                    difficulty: "medium"
                 }
-            }
+            ];
 
             return {
                 status: "ok",
-                interview_id: `int_${Date.now()}`,
-                questions: outputQuestions.slice(0, count)
+                interview_id: `int_${Math.random().toString(36).substr(2, 9)}`,
+                questions: questions.slice(0, count)
             };
         },
         evaluation: {
